@@ -1,0 +1,238 @@
+/* ══════════════════════════════════════════════
+   CODE FEUD — LOBBY SCREEN
+   1 player per team · localhost dev
+══════════════════════════════════════════════ */
+
+#screen-lobby {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: #060810;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  gap: 2rem;
+}
+
+#screen-lobby.active { display: flex; }
+
+/* ── Title ── */
+.lobby-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  font-weight: 900;
+  letter-spacing: .3em;
+  color: #00ff88;
+  text-shadow: 0 0 10px #00ff8866, 0 0 35px #00ff8830;
+  animation: flicker 5s infinite;
+  text-align: center;
+}
+
+/* reuse flicker from main styles if available, else define it */
+@keyframes flicker {
+  0%,97%,100% { opacity:1; } 98% { opacity:.75; }
+}
+
+.lobby-subtitle {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .8rem;
+  color: #4a5575;
+  letter-spacing: .12em;
+  text-align: center;
+  margin-top: -1.2rem;
+}
+
+/* ── QR Grid ── */
+.lobby-qr-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.8rem;
+  width: 100%;
+  max-width: 620px;
+}
+
+@media (max-width: 500px) {
+  .lobby-qr-grid { grid-template-columns: 1fr; max-width: 280px; }
+}
+
+/* ── QR Panel ── */
+.qr-panel {
+  border-radius: 16px;
+  border: 2px solid;
+  padding: 1.5rem 1.2rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+}
+
+.qr-panel-1 {
+  border-color: #00ff8840;
+  background: linear-gradient(160deg, #00ff880a 0%, transparent 60%);
+  box-shadow: 0 0 30px #00ff8810;
+}
+
+.qr-panel-2 {
+  border-color: #00e5ff40;
+  background: linear-gradient(160deg, #00e5ff0a 0%, transparent 60%);
+  box-shadow: 0 0 30px #00e5ff10;
+}
+
+/* Connected badge (top-right corner) */
+.connected-badge {
+  position: absolute;
+  top: .7rem;
+  right: .8rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .6rem;
+  letter-spacing: .06em;
+  padding: .2rem .55rem;
+  border-radius: 20px;
+  opacity: 0;
+  transform: scale(.8);
+  transition: opacity .3s, transform .3s;
+}
+
+.connected-badge.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.qr-panel-1 .connected-badge {
+  background: #00ff8820;
+  color: #00ff88;
+  border: 1px solid #00ff8840;
+}
+
+.qr-panel-2 .connected-badge {
+  background: #00e5ff20;
+  color: #00e5ff;
+  border: 1px solid #00e5ff40;
+}
+
+/* Team name */
+.qr-panel-name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: .2em;
+}
+
+.qr-panel-1 .qr-panel-name { color: #00ff88; text-shadow: 0 0 8px #00ff8855; }
+.qr-panel-2 .qr-panel-name { color: #00e5ff; text-shadow: 0 0 8px #00e5ff55; }
+
+/* QR image box */
+.qr-code-wrap {
+  width: 160px;
+  height: 160px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-code-wrap img,
+.qr-code-wrap canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Status line */
+.qr-status {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .72rem;
+  letter-spacing: .08em;
+  text-align: center;
+  transition: color .3s;
+}
+
+.qr-panel-1 .qr-status { color: #4a5575; }
+.qr-panel-2 .qr-status { color: #4a5575; }
+
+.qr-panel-1 .qr-status.ok { color: #00ff88aa; }
+.qr-panel-2 .qr-status.ok { color: #00e5ffaa; }
+
+/* ── Bottom area ── */
+.lobby-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .9rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.lobby-waiting {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .82rem;
+  color: #4a5575;
+  letter-spacing: .1em;
+  text-align: center;
+  transition: color .4s;
+  min-height: 1.4rem;
+}
+
+/* Animated dots */
+.dot {
+  display: inline-block;
+  animation: dotBlink 1.2s infinite;
+}
+.dot:nth-child(2) { animation-delay: .2s; }
+.dot:nth-child(3) { animation-delay: .4s; }
+
+@keyframes dotBlink {
+  0%,80%,100% { opacity: 0; }
+  40%          { opacity: 1; }
+}
+
+/* LAUNCH button */
+.btn-launch {
+  width: 100%;
+  padding: 1.15rem;
+  border-radius: 10px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: .25em;
+  border: 2px solid #00ff8855;
+  background: transparent;
+  color: #00ff8855;
+  cursor: default;
+  pointer-events: none;
+  transition: color .3s, border-color .3s, box-shadow .3s;
+}
+
+.btn-launch.ready {
+  color: #00ff88;
+  border-color: #00ff88;
+  cursor: pointer;
+  pointer-events: all;
+  box-shadow: 0 0 18px #00ff8850, 0 0 50px #00ff8818;
+  animation: launchPulse 2s infinite;
+}
+
+@keyframes launchPulse {
+  0%,100% { box-shadow: 0 0 18px #00ff8850, 0 0 50px #00ff8818; }
+  50%      { box-shadow: 0 0 28px #00ff88aa, 0 0 80px #00ff8835; }
+}
+
+.btn-launch.ready:active { transform: scale(.97); }
+
+/* Skip link */
+.btn-skip-lobby {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: .62rem;
+  letter-spacing: .12em;
+  color: #252d45;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: .3rem;
+  transition: color .2s;
+}
+.btn-skip-lobby:hover { color: #4a5575; }

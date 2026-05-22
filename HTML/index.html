@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CODE FEUD — TI Duel</title>
+  <link rel="stylesheet" href="/CSS/styles.css" />
+  <link rel="stylesheet" href="/CSS/lobby.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=VT323&display=swap" rel="stylesheet" />
+  <!-- qrcode.js — genera el QR sin llamadas externas (ideal para localhost) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+  <div class="crt-overlay"></div>
+  <div class="scanlines"></div>
+  <canvas id="particles" class="particles-bg"></canvas>
+
+  <!-- ── INTRO ── -->
+  <div id="screen-intro" class="screen active">
+    <div class="intro-content">
+      <div class="logo-glitch">
+        <span class="logo-main" data-text="CODE FEUD">CODE FEUD</span>
+      </div>
+      <p class="tagline">&gt; Let's see who knows the most!</p>
+      <div class="intro-teams">
+        <div class="team-setup" id="team1-setup">
+          <label class="team-label team1-color">[ TEAM 1 ]</label>
+          <input type="text" id="team1-name" class="team-input" placeholder="NAME OF THE TEAM..." maxlength="20" />
+        </div>
+        <div class="vs-badge">VS</div>
+        <div class="team-setup" id="team2-setup">
+          <label class="team-label team2-color">[ TEAM 2 ]</label>
+          <input type="text" id="team2-name" class="team-input" placeholder="NAME OF THE TEAM..." maxlength="20" />
+        </div>
+      </div>
+      <button class="btn-start" id="btn-start">
+        <span>START GAME!</span>
+        <div class="btn-glow"></div>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── LOBBY (insertado por lobby.js justo antes de #screen-game) ── -->
+
+  <!-- ── GAME ── -->
+  <div id="screen-game" class="screen">
+    <header class="game-hud">
+      <div class="hud-team" id="hud-team1">
+        <div class="hud-team-name" id="hud-name1">EQUIPO 1</div>
+        <div class="hud-score-wrap">
+          <span class="hud-score-label">PTS</span>
+          <span class="hud-score" id="score1">0</span>
+        </div>
+        <div class="hud-strikes" id="strikes1"></div>
+      </div>
+      <div class="hud-center">
+        <div class="round-badge">
+          <span class="round-label">ROUND</span>
+          <span class="round-num" id="round-num">1</span>
+          <span class="round-total" id="round-total">/ 5</span>
+        </div>
+        <div class="bank-display">
+          <span class="bank-label">BANK</span>
+          <span class="bank-amount" id="bank-amount">0</span>
+        </div>
+      </div>
+      <div class="hud-team hud-team-right" id="hud-team2">
+        <div class="hud-team-name" id="hud-name2">EQUIPO 2</div>
+        <div class="hud-score-wrap">
+          <span class="hud-score-label">PTS</span>
+          <span class="hud-score" id="score2">0</span>
+        </div>
+        <div class="hud-strikes" id="strikes2"></div>
+      </div>
+    </header>
+
+    <div class="question-box">
+      <div class="question-prefix">&gt; QUESTION_</div>
+      <div class="question-text" id="question-text">Loading question...</div>
+    </div>
+
+    <div class="board" id="answer-board"></div>
+
+    <div class="controls-panel">
+      <div class="turn-indicator">
+        <span class="turn-label">TURN:</span>
+        <span class="turn-team" id="turn-team">—</span>
+      </div>
+      <div class="input-row">
+        <input type="text" id="answer-input" class="answer-input" placeholder="Escribe tu respuesta..." autocomplete="off" />
+        <button class="btn-answer" id="btn-answer">SEND</button>
+      </div>
+      <div class="action-row">
+        <button class="btn-strike" id="btn-strike">✕ STRIKE</button>
+        <button class="btn-reveal" id="btn-reveal">REVEAL ALL</button>
+        <button class="btn-steal" id="btn-steal">⚡ STEAL</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── WINNER ── -->
+  <div id="screen-winner" class="screen">
+    <div class="winner-content">
+      <div class="winner-label">WINNERS!</div>
+      <div class="winner-name" id="winner-name">TEAM X</div>
+      <div class="winner-score-wrap">
+        <span class="winner-score-label">FINAL SCORE</span>
+        <span class="winner-score" id="winner-score">0</span>
+      </div>
+      <div class="score-breakdown">
+        <div class="score-row">
+          <span id="final-name1">Team 1</span>
+          <span id="final-score1">0</span>
+        </div>
+        <div class="score-row">
+          <span id="final-name2">Team 2</span>
+          <span id="final-score2">0</span>
+        </div>
+      </div>
+      <button class="btn-start" id="btn-replay">PLAY AGAIN</button>
+    </div>
+    <canvas id="confetti-canvas"></canvas>
+  </div>
+
+  <!-- Overlays -->
+  <div class="strike-overlay" id="strike-overlay">
+    <div class="strike-x">✕</div>
+    <div class="strike-text">STRIKE!</div>
+  </div>
+  <div class="correct-overlay" id="correct-overlay">
+    <div class="correct-text">CORRECT!</div>
+    <div class="correct-pts" id="correct-pts">+50</div>
+  </div>
+
+  <!-- Scripts: lobby primero, luego el juego -->
+  <script src="/JAVA/lobby.js"></script>
+  <script src="/script.js"></script>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // Signal to script.js that the lobby is handling btn-start
+      window._lobbyActive = true;
+
+      const lobby    = new LobbyManager();
+      const btnStart = document.getElementById('btn-start');
+
+      btnStart.addEventListener('click', function () {
+        const t1 = (document.getElementById('team1-name').value.trim() || 'HACKERS').toUpperCase();
+        const t2 = (document.getElementById('team2-name').value.trim() || 'DEBUGGERS').toUpperCase();
+
+        // Pre-fill state names so startGame() reads them correctly
+        document.getElementById('team1-name').value = t1;
+        document.getElementById('team2-name').value = t2;
+
+        lobby.open(t1, t2);
+      });
+      
+    })();
+  </script>
+
+</body>
+</html>
