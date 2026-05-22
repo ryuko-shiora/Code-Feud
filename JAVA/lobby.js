@@ -12,7 +12,7 @@ const BUZZ_KEY  = 'codefeud_buzz';
 class LobbyManager {
   constructor() {
     // Auto-detect: mismo origen, ruta /buzzer/index.html
-    this.buzzerBase = location.origin + '/Code-Feud/HTML/buzzer.html';
+    this.buzzerBase = location.origin + '/Code-Feud/buzzer/buzzer.html';
     this._pollInterval = null;
     this._build();
     this._bindEvents();
@@ -86,6 +86,7 @@ class LobbyManager {
 
   /* ── Open ─────────────────────────────────── */
   open(team1Name, team2Name) {
+    clearBuzz();
     this.el.qrName1.textContent = team1Name;
     this.el.qrName2.textContent = team2Name;
 
@@ -108,6 +109,23 @@ class LobbyManager {
 
     this._generateQRs();
     this._startPolling();
+
+    // 🔥 FIREBASE BUZZ LISTENER
+    listenForBuzz((data) => {
+
+      console.log('BUZZ RECEIVED:', data);
+
+      const turnTeam = document.getElementById('turn-team');
+
+      if (!turnTeam) return;
+
+      if (data.team === 1) {
+        turnTeam.textContent = this.el.qrName1.textContent;
+      } else {
+        turnTeam.textContent = this.el.qrName2.textContent;
+      }
+
+    });
   }
 
   /* ── QR generation ────────────────────────── */
@@ -233,3 +251,40 @@ function registerBuzzerPlayer() {
 
 window.LobbyManager = LobbyManager;
 registerBuzzerPlayer();
+
+// ═══════════════════════════════════════
+// FIREBASE REALTIME BUZZ SYSTEM
+// ═══════════════════════════════════════
+
+const buzzRefPath = 'buzz/current';
+
+function sendBuzz(team) {
+  const { db, ref, set } = window.firebaseDB;
+
+  set(ref(db, buzzRefPath), {
+    team,
+    timestamp: Date.now()
+  });
+}
+
+function listenForBuzz(callback) {
+  const { db, ref, onValue } = window.firebaseDB;
+
+  onValue(ref(db, buzzRefPath), (snapshot) => {
+    const data = snapshot.val();
+
+    if (data) {
+      callback(data);
+    }
+  });
+}
+
+function clearBuzz() {
+  const { db, ref, set } = window.firebaseDB;
+
+  set(ref(db, buzzRefPath), null);
+}
+
+window.sendBuzz = sendBuzz;
+window.listenForBuzz = listenForBuzz;
+window.clearBuzz = clearBuzz;

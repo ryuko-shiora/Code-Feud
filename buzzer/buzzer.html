@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>CODE FEUD BUZZER</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="../CSS/styles.css" />
+  <link rel="stylesheet" href="../CSS/lobby.css" />
+
+  <!-- FIREBASE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
+    import {
+      getDatabase,
+      ref,
+      set,
+      onValue
+    } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCH8vK_GZTKylzPDhID1Tm3G-GD7Rzttt8",
+      authDomain: "code-feud.firebaseapp.com",
+      databaseURL: "https://code-feud-default-rtdb.firebaseio.com",
+      projectId: "code-feud",
+      storageBucket: "code-feud.firebasestorage.app",
+      messagingSenderId: "356243552051",
+      appId: "1:356243552051:web:0473faf9810cc2f8467046",
+      measurementId: "G-3L4GRXCQJ5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    window.firebaseDB = {
+      db,
+      ref,
+      set,
+      onValue
+    };
+  </script>
+
+  <!-- BUZZER SCRIPT -->
+  <script type="module" src="../JAVA/buzzer.js"></script>
+
+</head>
+
+<body class="buzzer-body">
+
+  <!-- SELECT TEAM -->
+  <div id="screen-select" class="buzzer-select-screen">
+
+    <h1 class="select-title">SELECT TEAM</h1>
+
+    <button id="pick-team1" class="btn-team btn-team-1">
+      [ TEAM 1 ]
+    </button>
+
+    <button id="pick-team2" class="btn-team btn-team-2">
+      [ TEAM 2 ]
+    </button>
+
+  </div>
+
+  <!-- BUZZER SCREEN -->
+  <div id="screen-buzzer" class="buzzer-screen" style="display:none;">
+
+    <div id="buzz-team-display" class="buzzer-team-name">
+      [ TEAM ]
+    </div>
+
+    <div class="buzzer-btn-wrap">
+
+      <button id="big-buzzer-btn" class="big-buzzer">
+        BUZZ!
+      </button>
+
+    </div>
+
+    <div id="buzzer-status" class="buzzer-status">
+      Ready — be the first to buzz!
+    </div>
+
+    <div id="buzz-result" class="buzz-result">
+
+      <div id="buzz-result-icon"></div>
+
+      <div id="buzz-result-title"></div>
+
+      <div id="buzz-result-sub"></div>
+
+    </div>
+
+    <button id="btn-change-team" class="btn-change-team">
+      CHANGE TEAM
+    </button>
+
+  </div>
+
+</body>
+</html>

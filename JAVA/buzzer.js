@@ -1,7 +1,10 @@
 'use strict';
 
-const STORAGE_KEY = 'codefeud_buzz';
-const NAMES_KEY   = 'codefeud_names';
+const { db, ref, set, onValue } = window.firebaseDB;
+
+const buzzRef = ref(db, 'buzz/current');
+
+const NAMES_KEY = 'codefeud_names';
 
 // Read team names if set by host
 function getTeamNames() {
@@ -92,7 +95,7 @@ function doBuzz() {
     ts:   Date.now()
   };
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  set(buzzRef, state);
 
   // Trigger animation
   buzzerBtn.classList.add('buzzing');
@@ -104,12 +107,10 @@ function doBuzz() {
   checkBuzzState();
 }
 
+let currentBuzzState = null;
+
 function readBuzzState() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch(e) {}
-  return null;
+  return currentBuzzState;
 }
 
 function checkBuzzState() {
@@ -142,20 +143,12 @@ function checkBuzzState() {
   }
 }
 
-// ── LISTEN FOR CHANGES ── (other tabs / other players)
-window.addEventListener('storage', e => {
-  if (e.key === STORAGE_KEY || e.key === NAMES_KEY) {
-    if (e.key === NAMES_KEY) refreshTeamLabels();
-    if (myTeam) checkBuzzState();
-  }
-});
+onValue(buzzRef, (snapshot) => {
 
-// Also poll (for same-device scenarios)
-let lastBuzzRaw = null;
-setInterval(() => {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (raw !== lastBuzzRaw) {
-    lastBuzzRaw = raw;
-    if (myTeam) checkBuzzState();
+  currentBuzzState = snapshot.val();
+
+  if (myTeam) {
+    checkBuzzState();
   }
-}, 300);    
+
+});

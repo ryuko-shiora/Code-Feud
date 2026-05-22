@@ -161,6 +161,36 @@
       
     })();
   </script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
 
+    import {
+      getDatabase,
+      ref,
+      set,
+      onValue
+    } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCH8vK_GZTKylzPDhID1Tm3G-GD7Rzttt8",
+      authDomain: "code-feud.firebaseapp.com",
+      databaseURL: "https://code-feud-default-rtdb.firebaseio.com",
+      projectId: "code-feud",
+      storageBucket: "code-feud.firebasestorage.app",
+      messagingSenderId: "356243552051",
+      appId: "1:356243552051:web:0473faf9810cc2f8467046",
+      measurementId: "G-3L4GRXCQJ5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    window.firebaseDB = {
+      db,
+      ref,
+      set,
+      onValue
+    };
+  </script>
 </body>
 </html>
