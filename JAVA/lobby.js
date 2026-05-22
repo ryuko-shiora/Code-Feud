@@ -12,7 +12,7 @@ const BUZZ_KEY  = 'codefeud_buzz';
 class LobbyManager {
   constructor() {
     // Auto-detect: mismo origen, ruta /buzzer/index.html
-    this.buzzerBase = location.origin + '/buzzer/index.html';
+    this.buzzerBase = location.origin + '/Code-Feud/HTML/buzzer.html';
     this._pollInterval = null;
     this._build();
     this._bindEvents();
